@@ -1,0 +1,44 @@
+{
+  "name": "grayloon/stack-reporter-laravel",
+  "description": "Laravel package for syncing composer package details to StackReporter.",
+  "license": "MIT",
+  "type": "project",
+  "require": {
+    "php": "^8.1",
+    "composer-runtime-api": "^2.0",
+    "guzzlehttp/guzzle": "^7.2"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.1",
+    "laravel/framework": "^10.0|^11.0",
+    "orchestra/testbench": "^7.0|^8.0",
+    "pestphp/pest": "^2.0",
+    "pestphp/pest-plugin-laravel": "^2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "GrayLoon\\StackReporter\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GrayLoon\\StackReporter\\Tests\\": "tests"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "GrayLoon\\StackReporter\\StackReporterServiceProvider"
+      ],
+      "aliases": {
+        "StackReporter": "GrayLoon\\StackReporter\\StackReporterStorageFacade"
+      }
+    }
+  }
+}
