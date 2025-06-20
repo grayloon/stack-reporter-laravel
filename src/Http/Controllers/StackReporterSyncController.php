@@ -31,10 +31,10 @@ class StackReporterSyncController extends Controller
     public function __invoke(Request $request): mixed
     {
         if (
-            config('stack_reporter.api_key')
+            config('grayloon_stack_reporter.api_key')
             && $request->get('apikey')
         ) {
-            if (config('stack_reporter.api_key') === $request->get('apikey')) {
+            if (config('grayloon_stack_reporter.api_key') === $request->get('apikey')) {
                 if (function_exists('exec')) {
                     exec('node -v 2>/dev/null', $output, $return_var);
                     if ($return_var === 0 && !empty($output[0])) {
