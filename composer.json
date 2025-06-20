@@ -1,8 +1,26 @@
 {
   "name": "grayloon/stack-reporter-laravel",
   "description": "Laravel package for syncing composer package details to StackReporter.",
+  "keywords": [
+    "laravel",
+    "stack",
+    "reporter",
+    "monitoring",
+    "system"
+  ],
   "license": "MIT",
-  "type": "project",
+  "type": "library",
+  "authors": [
+    {
+      "name": "GrayLoon",
+      "email": "info@grayloon.com"
+    }
+  ],
+  "homepage": "https://github.com/grayloon/stack-reporter-laravel",
+  "support": {
+    "issues": "https://github.com/grayloon/stack-reporter-laravel/issues",
+    "source": "https://github.com/grayloon/stack-reporter-laravel"
+  },
   "require": {
     "php": "^8.1",
     "composer-runtime-api": "^2.0",
@@ -31,6 +49,8 @@
       "pestphp/pest-plugin": true
     }
   },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
   "extra": {
     "laravel": {
       "providers": [
