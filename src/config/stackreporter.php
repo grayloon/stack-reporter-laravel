@@ -1,5 +1,5 @@
 <?php
 
 return [
-	'api_site_key' => env('STACKREPORTER_API_SITE_KEY', null),
+	'api_key' => env('STACKREPORTER_API_KEY', null),
 ];
