@@ -3,16 +3,11 @@
 namespace GrayLoon\StackReporter\Http\Controllers;
 
 use Composer\InstalledVersions;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 
 class StackReporterSyncController extends Controller
 {
-    use AuthorizesRequests;
-    use ValidatesRequests;
-
     /**
      * @param  InstalledVersions|null  $composer
      */

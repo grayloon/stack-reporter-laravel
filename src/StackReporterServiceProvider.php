@@ -3,7 +3,6 @@
 namespace GrayLoon\StackReporter;
 
 use Illuminate\Foundation\Console\AboutCommand;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class StackReporterServiceProvider extends ServiceProvider
@@ -14,9 +13,7 @@ class StackReporterServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->booted(function () {
-            Route::group([
-                'namespace' => 'GrayLoon\StackReporter\Http\Controllers',
-            ], fn() => $this->loadRoutesFrom(__DIR__ . '/Http/routes.php'));
+            $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
         });
 
         if ($this->app->runningInConsole()) {
