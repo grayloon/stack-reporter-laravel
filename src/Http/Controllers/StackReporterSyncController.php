@@ -2,51 +2,55 @@
 
 namespace GrayLoon\StackReporter\Http\Controllers;
 
-use Composer\InstalledVersions;
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class StackReporterSyncController extends Controller
 {
     /**
-     * @param  InstalledVersions|null  $composer
+     * Handle the incoming request.
      */
-    public function __construct(
-        public ?InstalledVersions $composer = null
-    ) {
-        $this->composer = $composer ?? new InstalledVersions();
+    public function __invoke(Request $request): Response
+    {
+        $apiKey = config('grayloon_stack_reporter.api_key');
+
+        if (! is_string($apiKey) || $apiKey === '') {
+            return response('StackReporter API key is not configured.', status: 500);
+        }
+
+        $requestKey = $request->input('apikey');
+
+        if (! is_string($requestKey) || $requestKey === '') {
+            return response('Missing API key.', status: 401);
+        }
+
+        if (! hash_equals($apiKey, $requestKey)) {
+            return response('Invalid API key given.', status: 403);
+        }
+
+        return response()->json([
+            'laravel_version' => app()->version(),
+            'php_version' => phpversion(),
+            'node_version' => $this->nodeVersion(),
+        ]);
     }
 
     /**
-     * Handle the incoming request.
-     *
-     * @param Request $request
-     * @return mixed
+     * Get the installed Node version, or null when Node is unavailable (e.g. Lambda).
      */
-    public function __invoke(Request $request): mixed
+    protected function nodeVersion(): ?string
     {
-        if (
-            config('grayloon_stack_reporter.api_key')
-            && $request->get('apikey')
-        ) {
-            if (config('grayloon_stack_reporter.api_key') === $request->get('apikey')) {
-                if (function_exists('exec')) {
-                    exec('node -v 2>/dev/null', $output, $return_var);
-                    if ($return_var === 0 && !empty($output[0])) {
-                        $node_version = trim(str_replace('v', '', end($output)));
-                    }
-                }
-
-                return response()->json([
-                    'laravel_version' => app()->version(),
-                    'php_version'      => phpversion(),
-                    'node_version' => $node_version,
-                ]);
-            }
-
-            return response('Invalid API Site Key given.', status: 403);
+        if (! function_exists('exec')) {
+            return null;
         }
 
-        return response('Application not in production or missing API Site Key.', status: 500);
+        exec('node -v 2>/dev/null', $output, $exitCode);
+
+        if ($exitCode !== 0 || empty($output[0])) {
+            return null;
+        }
+
+        return ltrim(trim($output[0]), 'v');
     }
 }

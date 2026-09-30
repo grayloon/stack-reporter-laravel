@@ -2,6 +2,7 @@
 
 namespace GrayLoon\StackReporter;
 
+use Composer\InstalledVersions;
 use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,7 +23,9 @@ class StackReporterServiceProvider extends ServiceProvider
             ], 'config');
         }
 
-        AboutCommand::add('StackReporter', 'Version', '1.0.0');
+        AboutCommand::add('StackReporter', [
+            'Version' => fn () => InstalledVersions::getPrettyVersion('grayloon/stack-reporter-laravel'),
+        ]);
     }
 
     /**
