@@ -1,6 +1,11 @@
 # Stack Reporter Package for Laravel
 
-A simple Laravel package that provides system information endpoints for monitoring your application stack.
+A simple Laravel package that provides an endpoint reporting your application's Laravel, PHP, and Node versions to StackReporter.
+
+## Requirements
+
+- PHP 8.2 – 8.4
+- Laravel 11 or 12
 
 ## Installation
 
@@ -10,87 +15,83 @@ Install the package with Composer:
 composer require grayloon/stack-reporter-laravel
 ```
 
+The service provider is registered automatically through Laravel package discovery.
+
 ## Configuration
 
-Publish the configuration file:
+Add your API key to your `.env` file:
+
+```env
+STACKREPORTER_API_KEY=your-secret-api-key-here
+```
+
+Optionally, publish the configuration file:
 
 ```bash
 php artisan vendor:publish --provider="GrayLoon\StackReporter\StackReporterServiceProvider" --tag="config"
 ```
 
-This will create a `config/grayloon_stack_reporter.php` file with the following content:
+This creates `config/grayloon_stack_reporter.php`:
 
 ```php
 <?php
 
 return [
-    'api_key' => env('STACK_REPORTER_API_KEY'),
+    'api_key' => env('STACKREPORTER_API_KEY'),
 ];
-```
-
-Add your API key to your `.env` file:
-
-```env
-STACK_REPORTER_API_KEY=your-secret-api-key-here
-```
-
-## Service Provider Registration
-
-If you're using Laravel 5.5 or higher, the service provider will be automatically discovered. For older versions, manually register the service provider in `config/app.php`:
-
-```php
-// config/app.php
-'providers' => [
-    // Other Service Providers...
-    GrayLoon\StackReporter\StackReporterServiceProvider::class,
-],
 ```
 
 ## Usage
 
-Once installed and configured, the package automatically registers an API endpoint that accepts POST requests with your configured API key.
+The package registers a single endpoint that accepts POST requests containing your API key.
 
 ### Endpoint
 
 - **POST** `/api/v1/stack-reporter`
   - **Parameter**: `apikey` - Your configured API key
-  - **Returns**: JSON response with system information
+  - **Returns**: JSON with the application's stack versions
+  - **Rate limit**: 60 requests per minute
 
 ### Making a Request
 
 ```bash
-curl -X POST http://your-app.com/api/v1/stack-reporter \
+curl -X POST https://your-app.com/api/v1/stack-reporter \
   -H "Content-Type: application/json" \
   -d '{"apikey": "your-secret-api-key-here"}'
 ```
 
-### Response Data
-
-The endpoint returns information about your application stack:
-- Laravel version
-- PHP version
-- Node version (if available)
-
-## Example Response
+### Example Response
 
 ```json
 {
-  "laravel_version": "10.0.0",
-  "php_version": "8.2.12",
+  "laravel_version": "12.0.0",
+  "php_version": "8.4.0",
   "node_version": "22.14.0"
 }
 ```
 
-## Security
+`node_version` is `null` when Node isn't installed or can't be run from PHP, such as on AWS Lambda or when `exec()` is disabled.
 
-- The endpoint requires a valid API key to access
-- Returns a 403 error for invalid API keys
-- Returns a 500 error if no API key is configured
+## Responses
 
-## Requirements
+| Status | Body | When |
+| --- | --- | --- |
+| 200 | JSON (above) | The API key matches |
+| 401 | `Missing API key.` | The request has no `apikey` |
+| 403 | `Invalid API key given.` | The `apikey` doesn't match |
+| 429 | Too Many Requests | More than 60 requests in a minute |
+| 500 | `StackReporter API key is not configured.` | `STACKREPORTER_API_KEY` isn't set |
 
-- PHP 8.1 or higher
-- Laravel 9.0 or higher
+## About Command
+
+The installed package version appears in `php artisan about` under **StackReporter**.
+
+## Testing
+
+```bash
+composer install
+vendor/bin/pest
+```
 
 ## License
 
